@@ -20,7 +20,7 @@ clean_master_data<-here("Data","Cleaned Data","Master Data")
 
 # Data ----
 ## Load Data ----
-dat_list<-readRDS(paste0(clean_master_data,"/","datlist.Rdata")) # Master Data
+dat_list<-readRDS(here(clean_master_data,"datlist.Rdata")) # Master Data
 
 ## Data Transformation ----
 dat_list<-map(dat_list,data_transform_fn,
@@ -45,9 +45,7 @@ dat_ICS<-map(dat_list,ind_calculate_fn)|>
 #----------------------------------------------------------------------------------#
 # Write Data ----
 ## Excel File ----
-write_xlsx(dat_ICS,paste0(clean_data,
-                          "/","ICS.xlsx"))
+write_xlsx(dat_ICS,here(clean_data,"ICS.xlsx"))
 
 ## Rdata ----
-saveRDS(dat_ICS,paste0(clean_data,
-                       "/","ICS.Rdata"))
+saveRDS(dat_ICS,here(clean_data,"ICS.Rdata"))
