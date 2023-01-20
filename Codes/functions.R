@@ -58,14 +58,9 @@ df_rename_fn<-function(x,nam){
 
 
 ## Data Importing ----
-data_import_fn<-function(filename){
+data_import_fn<-function(filename,num_cols,char_cols){
         read_csv(file = filename,
-                 col_select = c(1:9,
-                                FAMILY_FINANCES_COMPARED_TO_YEAR_AGO,
-                                FAMILY_FINANCES_A_YEAR_LATER,
-                                CONDITIONS_IN_COUNTRY_OVER_NEXT_12_MONTHS,
-                                CONDITIONS_IN_COUNTRY_OVER_NEXT_5_YEARS,
-                                IS_THIS_GOOD_TIME_TO_BUY_CONSUMER_DURABLES)) |> 
+                 col_select = c(num_cols,{{char_cols}})) |> 
                 clean_names() |> 
                 mutate(month_slot=as.Date(paste0("01-",month_slot),
                                           format = "%d-%b %Y")) |> 
@@ -91,10 +86,10 @@ data_import_fn<-function(filename){
 }
 
 ## Data transform ----
-data_transform_fn<-function(dat){
+data_transform_fn<-function(dat,col_select,pivot_cols){
         dat |> 
-                select(1:14) |> 
-                pivot_longer(cols = 10:14) |> 
+                select(all_of(col_select)) |> 
+                pivot_longer(cols = pivot_cols) |> 
                 count(month_slot,name,value) |> 
                 group_by(month_slot,name) |> 
                 mutate(num=sum(n),
