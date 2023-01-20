@@ -5,7 +5,7 @@
 source("Codes/functions.R")
 
 ## Packages ----
-packages<-c("readxl","tidyverse","fs","lubridate","writexl","rio","readr")
+packages<-c("tidyverse","fs","writexl")
 package_fn(packages)
 
 ## Folders ad Files ----
