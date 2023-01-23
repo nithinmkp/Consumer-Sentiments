@@ -87,7 +87,7 @@ data_import_fn<-function(filename,num_cols,char_cols){
 
 ## Data transform ----
 data_transform_fn<-function(dat,col_select,pivot_cols){
-        dat |> 
+        dat<- dat |> 
                 select(all_of(col_select)) |> 
                 pivot_longer(cols = pivot_cols) |> 
                 count(month_slot,name,value) |> 
@@ -95,9 +95,10 @@ data_transform_fn<-function(dat,col_select,pivot_cols){
                 mutate(num=sum(n),
                        perc=(n/num)*100) |> 
                 select(month_slot,name,value,perc) |> 
-                group_by(name) |> 
+                group_by(name) 
+        dat|> 
                 group_split() |> 
-                set_names(sort(colnames(dat)[10:14]))
+                set_names(unique(dat$name))
 }
 
 

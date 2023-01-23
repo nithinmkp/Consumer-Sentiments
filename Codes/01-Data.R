@@ -18,7 +18,7 @@ dir_create(clean_data)
 ## Reading the data ----
 file_list<-list.files(raw_data,pattern = "*.csv")
 dat_list<-map(here(raw_data,file_list),data_import_fn,
-              num_cols=1:9,
+              num_cols=c(1:9,18:22,26),
               char_cols=c(
                       FAMILY_FINANCES_COMPARED_TO_YEAR_AGO,
                       FAMILY_FINANCES_A_YEAR_LATER,
