@@ -5,7 +5,7 @@
 source("Codes/functions.R")
 
 ## Packages ----
-packages<-c("tidyverse","fs","writexl","readr","janitor","here")
+packages<-c("tidyverse","fs","writexl","readr","janitor","here","labelled")
 package_fn(packages)
 
 ## Folders and Files ----
@@ -29,6 +29,18 @@ dat_list<-map(here(raw_data,file_list),data_import_fn,
         set_names(str_extract(file_list,
                               pattern="[a-zA-Z]{3}_[a-zA-Z]{3,4}_[0-9]{4}"))
 
+## labels for variables
+description <-tibble(name=names(dat_list$jan_apr_2016)[10:14],
+       label=c("Current Financial conditions compared with last 12 months",
+               "Expected Financial conditions in next 12 months",
+               "Expected business condtions in next 12 months",
+               "Expected business condtions in 5 years",
+               "Buying Conditions"))
+var_labels <- setNames(as.list(description$label), description$name)
+
+dat_list<-map(dat_list,~.x |> 
+                      set_variable_labels(.labels = var_labels,
+                                          .strict = F))
 ## Save Cleaned Data ----
 clean_master_data<-here(clean_data,"Master Data")
 dir_create(clean_master_data)
