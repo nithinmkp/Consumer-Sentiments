@@ -24,8 +24,7 @@ dat_list<-readRDS(here(clean_master_data,"datlist.Rdata")) # Master Data
 
 ## Data Transformation ----
 dat_list<-map(dat_list,data_transform_fn,
-              col_select=1:14,
-              pivot_cols=10:14)
+              pivot_cols = 16:20)
 
 #----------------------------------------------------------------------------------#
 

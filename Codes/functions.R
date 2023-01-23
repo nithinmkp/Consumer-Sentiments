@@ -86,9 +86,8 @@ data_import_fn<-function(filename,num_cols,char_cols){
 }
 
 ## Data transform ----
-data_transform_fn<-function(dat,col_select,pivot_cols){
-        dat<- dat |> 
-                select(all_of(col_select)) |> 
+data_transform_fn<-function(dat,pivot_cols){
+        dat<- dat |>  
                 pivot_longer(cols = pivot_cols) |> 
                 count(month_slot,name,value) |> 
                 group_by(month_slot,name) |> 
