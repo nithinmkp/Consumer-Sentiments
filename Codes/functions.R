@@ -85,6 +85,31 @@ data_import_fn<-function(filename,num_cols,char_cols){
                 across(10:14,as.factor))
 }
 
+## Category group
+group_vars_fn<-function(dat,var_select,group_var){
+        dat<- dat |> 
+                pivot_longer(cols = var_select,
+                             names_to = "Series",
+                             values_to = "Values")
+        name_series<-dat |> 
+                select({{group_var}}) |> 
+                distinct() |> 
+                pull()
+        dat |>
+                group_by({{group_var}}) |>
+                group_split(.keep=FALSE) |>
+                set_names(name_series)
+}
+
+## Group Split ----
+group_split_fn<-function(dat){
+        name_vals<-unique(dat$Values)
+        dat |> 
+                group_split(Values,.keep = FALSE) |> 
+                set_names(name_vals)
+        
+}
+
 ## Data transform ----
 data_transform_fn<-function(dat,pivot_cols){
         dat<- dat |>  

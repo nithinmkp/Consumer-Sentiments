@@ -18,14 +18,15 @@ dir_create(clean_data)
 ## Reading the data ----
 file_list<-list.files(raw_data,pattern = "*.csv")
 dat_list<-map(here(raw_data,file_list),data_import_fn,
-              num_cols=c(1:9,18:22,26),
+              num_cols=c(1:9),
               char_cols=c(
                       FAMILY_FINANCES_COMPARED_TO_YEAR_AGO,
                       FAMILY_FINANCES_A_YEAR_LATER,
                       CONDITIONS_IN_COUNTRY_OVER_NEXT_12_MONTHS,
                       CONDITIONS_IN_COUNTRY_OVER_NEXT_5_YEARS,
-                      IS_THIS_GOOD_TIME_TO_BUY_CONSUMER_DURABLES
-              )) |> 
+                      IS_THIS_GOOD_TIME_TO_BUY_CONSUMER_DURABLES,
+                      AGE_GROUP, INCOME_GROUP, OCCUPATION_GROUP,
+                      EDUCATION_GROUP, GENDER_GROUP, SIZE_GROUP)) |> 
         set_names(str_extract(file_list,
                               pattern="[a-zA-Z]{3}_[a-zA-Z]{3,4}_[0-9]{4}"))
 

@@ -22,21 +22,50 @@ clean_master_data<-here("Data","Cleaned Data","Master Data")
 ## Load Data ----
 dat_list<-readRDS(here(clean_master_data,"datlist.Rdata")) # Master Data
 
-## Data Transformation ----
+### General ICS ----
+
+#### Data Transformation ----
 dat_list<-map(dat_list,data_transform_fn,
-              pivot_cols = 16:20)
+              pivot_cols = 10:14)
+
+### Category-Wise ICS ----
+
+#### Data Transformation ----
+
+cat_dat_list<-dat_list |> 
+        reduce(bind_rows) |> 
+        group_vars_fn(var_select = c(6,15:20),
+                      group_var = Series)
 
 #----------------------------------------------------------------------------------#
 
 #----------------------------------------------------------------------------------#
 # Calculation of ICS ----
-## Components of ICS and ICS ----
+
+## General ICS ----
+### Components of ICS and ICS ----
 dat_ICS<-map(dat_list,ind_calculate_fn)|> 
         map_df(bind_rows) |> 
         arrange(month_slot) |> 
         rowwise() |> 
         mutate(ICS=mean(c_across(2:6)))
 
+
+## Category Wise ICS
+### Components of ICS and ICS ----
+cat_dat_list<-map(cat_dat_list,~.x %>%
+                          group_split_fn()) %>% 
+        map(.,~.x %>%
+                    map(.,~.x %>% 
+                                data_transform_fn(pivot_cols=9:13)))
+cat_dat_list<- cat_dat_list %>%
+        map(.,~.x %>%
+                    map(.,~.x %>% 
+                                data_transform_fn(pivot_cols=9:13)))
+
+lst_dat_ICS<-map(cat_dat_list,~.x %>%
+                         map(.,~.x %>%
+                                     ind_calculate_fn))
 
 #----------------------------------------------------------------------------------#
 
