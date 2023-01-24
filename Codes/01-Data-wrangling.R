@@ -25,7 +25,7 @@ dat_list<-readRDS(here(clean_master_data,"datlist.Rdata")) # Master Data
 ### General ICS ----
 
 #### Data Transformation ----
-dat_list<-map(dat_list,data_transform_fn,
+dat_list_gen<-map(dat_list,data_transform_fn,
               pivot_cols = 10:14)
 
 ### Category-Wise ICS ----
@@ -44,7 +44,7 @@ cat_dat_list<-dat_list |>
 
 ## General ICS ----
 ### Components of ICS and ICS ----
-dat_ICS<-map(dat_list,ind_calculate_fn)|> 
+dat_ICS<-map(dat_list_gen,ind_calculate_fn)|> 
         map_df(bind_rows) |> 
         arrange(month_slot) |> 
         rowwise() |> 
@@ -58,11 +58,6 @@ cat_dat_list<-map(cat_dat_list,~.x %>%
         map(.,~.x %>%
                     map(.,~.x %>% 
                                 data_transform_fn(pivot_cols=9:13)))
-cat_dat_list<- cat_dat_list %>%
-        map(.,~.x %>%
-                    map(.,~.x %>% 
-                                data_transform_fn(pivot_cols=9:13)))
-
 lst_dat_ICS<-map(cat_dat_list,~.x %>%
                          map(.,~.x %>%
                                      ind_calculate_fn))
@@ -72,8 +67,19 @@ lst_dat_ICS<-map(cat_dat_list,~.x %>%
 
 #----------------------------------------------------------------------------------#
 # Write Data ----
-## Excel File ----
+
+## General ICS ----
+### Excel File ----
 write_xlsx(dat_ICS,here(clean_data,"ICS.xlsx"))
 
-## Rdata ----
+### Rdata ----
 saveRDS(dat_ICS,here(clean_data,"ICS.Rdata"))
+
+## Category Wise ICS ----
+### Excel File ----
+
+
+### Rdata ----
+
+#----------------------------------------------------------------------------------#
+
