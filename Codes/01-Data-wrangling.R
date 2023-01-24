@@ -60,7 +60,11 @@ cat_dat_list<-map(cat_dat_list,~.x %>%
                                 data_transform_fn(pivot_cols=9:13)))
 lst_dat_ICS<-map(cat_dat_list,~.x %>%
                          map(.,~.x %>%
-                                     ind_calculate_fn))
+                                     ind_calculate_fn))%>% 
+        map(.,~.x %>% 
+                    map(.,~.x %>% 
+                                rowwise() |> 
+                                mutate(ICS=mean(c_across(2:6)))))
 
 #----------------------------------------------------------------------------------#
 
@@ -77,9 +81,23 @@ saveRDS(dat_ICS,here(clean_data,"ICS.Rdata"))
 
 ## Category Wise ICS ----
 ### Excel File ----
+#### Renaming for sheet names
+names(lst_dat_ICS$age_group)[c(2,8)]<-c("Balanced households-NO Seniors",
+                                        "Balanced households-Seniors")
+names(lst_dat_ICS$occupation_group)[c(1,2,16,13,19)]<-c("White-collar Clers",
+                                                        "White-collar Pro",
+                                                        "Non-industrial Techs",
+                                                        "Qualified Self-employed",
+                                                        "Scoial-worker/activisit")
+names(lst_dat_ICS$education_group)[c(3,5,11)]<-c("Matriculates-minor-household",
+                                                 "Matriculates-major-household",
+                                                 "Matri-dominated-household")
 
+tibble(x=lst_dat_ICS,
+       file=here(clean_master_data,paste0(names(cat_dat_list),".xlsx"))) |> 
+        pwalk(write.xlsx)
 
 ### Rdata ----
-
+saveRDS(lst_dat_ICS,here(clean_data,"Cat-ICS.Rdata"))
 #----------------------------------------------------------------------------------#
 
