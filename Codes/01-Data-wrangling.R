@@ -5,7 +5,7 @@
 source("Codes/functions.R")
 
 ## Packages ----
-packages<-c("tidyverse","fs","writexl")
+packages<-c("tidyverse","fs","writexl","here")
 package_fn(packages)
 
 ## Folders ad Files ----
@@ -43,9 +43,10 @@ cat_dat_list<-dat_list |>
 #### Data Transformation ----
 
 state_dat_list<-dat_list |> 
-        reduce(bind_rows) |> 
-        group_vars_fn(var_select = c(6,15:20),
-                      group_var = Series)
+        reduce(bind_rows)|> 
+        group_vars_fn(var_select = c(3),
+                      group_var = Series) 
+        
 
 #----------------------------------------------------------------------------------#
 
@@ -60,7 +61,7 @@ dat_ICS<-dat_list_gen |>
         mutate(ICS=mean(c_across(2:6)))
 
 
-## Category Wise ICS
+## Category Wise ICS ----
 ### Components of ICS and ICS ----
 cat_dat_list<-map(cat_dat_list,~.x %>%
                           group_split_fn()) %>% 
@@ -74,6 +75,22 @@ lst_dat_ICS<-map(cat_dat_list,~.x %>%
                     map(.,~.x %>% 
                                 rowwise() |> 
                                 mutate(ICS=mean(c_across(2:6)))))
+
+
+## State-Wise ICS ----
+### Components of ICS and ICS ----
+state_dat_list<-map(state_dat_list,~.x %>%
+                          group_split_fn()) %>% 
+        map(.,~.x %>%
+                    map(.,~.x %>% 
+                                data_transform_fn(pivot_cols=9:13)))
+lst_state_ICS<-map(state_dat_list,~.x %>%
+                         map(.,~.x %>%
+                                     ind_calculate_fn))%>% 
+        flatten() %>%
+        map(.,~.x %>% 
+                    rowwise() |> 
+                                mutate(ICS=mean(c_across(2:6))))
 
 #----------------------------------------------------------------------------------#
 
@@ -108,5 +125,12 @@ tibble(x=lst_dat_ICS,
 
 ### Rdata ----
 saveRDS(lst_dat_ICS,here(clean_data,"Cat-ICS.Rdata"))
+
+## State-Wise ICS ----
+### Excel File ----
+write_xlsx(lst_state_ICS,here(clean_data,"state-ICS.xlsx"))
+
+### Rdata ----
+saveRDS(lst_state_ICS,here(clean_data,"state-ICS.Rdata"))
 #----------------------------------------------------------------------------------#
 
