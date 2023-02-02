@@ -2,7 +2,7 @@
 # Set-up ------------------------------------------------------------------
 
 ## Functions ----
-source("Codes/functions.R")
+source(here::here("Codes","functions.R"))
 
 ## Packages ----
 packages<-c("tidyverse","fs","writexl","readr","janitor","here","labelled")

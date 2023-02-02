@@ -1,16 +1,16 @@
 
 # Set-up ------------------------------------------------------------------
 ## Functions ----
-source("Codes/functions.R")
+source(here::here("Codes","functions.R"))
 
 ## Packages ----
-packages<-c("tidyverse","fs","ggthemes","showtext")
+packages<-c("tidyverse","fs","ggthemes","showtext","here")
 package_fn(packages)
 
 ## Folders and Files ----
-raw_data<-"Data/Consumer Sentiments/Raw Data"
-clean_data<-"Data/Consumer Sentiments/Cleaned Data"
-clean_master_data<-paste0(clean_data,"/Master Data")
+raw_data<-here("Data","Raw Data")
+clean_data<-here("Data","Cleaned Data")
+clean_master_data<-here("Data","Cleaned Data","Master Data")
 
 ## Fonts ----
 font_add_google("Oswald", "oswald")
@@ -21,7 +21,7 @@ font_add_google("Space Grotesk", "spacegrot")
 # ICS Trends plot ----
 ## Data ----
 ### Load Data ----
-dat<-readRDS("Data/Consumer Sentiments/Cleaned Data/ICS.Rdata")
+dat<-readRDS(here("Data","Cleaned Data","ICS.Rdata"))
 
 ## Pivot Data ----
 
@@ -69,7 +69,7 @@ dat_pivot |>
 tibble(df=dat_list,varname=names(dat_list),
        plt_title=plot_labels) %>% 
   mutate(plot=pmap(.,plot_fn,xvar=month_slot))  |> 
-  mutate(filename = paste0("ggplots/",levels(dat_pivot$Series),".jpg"))  |>  
+  mutate(filename = paste0(here("ggplots",levels(dat_pivot$Series)),".jpg"))  |>  
   select(plot,filename) %>% 
   pwalk(ggsave,width = 18,
         height = 12,
@@ -80,7 +80,7 @@ tibble(df=dat_list,varname=names(dat_list),
        plt_title=plot_labels)%>%
         pmap(plot_fn,xvar=month_slot)|> 
         patchwork::wrap_plots(ncol = 3) |> 
-        ggsave(filename = paste0("ggplots/","fig2-repli",".jpg"),
+        ggsave(filename = paste0(here("ggplots","fig2-repli"),".jpg"),
                width = 32,
                height = 18.5,
                units = "cm",

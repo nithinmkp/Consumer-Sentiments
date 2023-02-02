@@ -149,7 +149,9 @@ ind_calculate_fn<-function(lst){
 
 ## ICS Plot ----
 showtext::showtext_auto()
-plot_fn<-function(df,varname,xvar,plt_title,yscale=NULL){
+plot_fn<-function(df,varname,xvar,plt_title,yscale=NULL,
+                  plt_title.size=20,axix_title.size=14,
+                  axis_text.size=14){
         df |> 
                 ggplot()+
                 aes(x={{xvar}},
@@ -161,13 +163,13 @@ plot_fn<-function(df,varname,xvar,plt_title,yscale=NULL){
                       panel.grid.minor = element_blank(),
                       axis.line = element_line(colour = "black"),
                       axis.text = element_text(family = "spacegrot",
-                                               size = 4,
+                                               size = axis_text.size,
                                                colour = "#043572"),
                       plot.title = element_text(family = "oswald",
                                                 colour = "#043572",
-                                                size = 9.5),
+                                                size = plt_title.size),
                       axis.title = element_text(family = "spacegrot",
-                                                size = 9,
+                                                size = axix_title.size,
                                                 colour = "#043572")
                 )+
                 scale_x_date(breaks = "6 months",
