@@ -68,7 +68,10 @@ dat_pivot |>
 
 tibble(df=dat_list,varname=names(dat_list),
        plt_title=plot_labels) %>% 
-  mutate(plot=pmap(.,plot_fn,xvar=month_slot))  |> 
+  mutate(plot=pmap(.,plot_fn,xvar=month_slot,
+                   start_date="2016-01-01",
+                   end_date="2021-12-01",
+                   date_break="6 months"))  |> 
   mutate(filename = paste0(here("ggplots",levels(dat_pivot$Series)),".jpg"))  |>  
   select(plot,filename) %>% 
   pwalk(ggsave,width = 18,

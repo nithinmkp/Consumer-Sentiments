@@ -94,7 +94,8 @@ group_vars_fn<-function(dat,var_select,group_var){
         name_series<-dat |> 
                 select({{group_var}}) |> 
                 distinct() |> 
-                pull()
+                pull() |> 
+                sort()
         dat |>
                 group_by({{group_var}}) |>
                 group_split(.keep=FALSE) |>
@@ -103,7 +104,7 @@ group_vars_fn<-function(dat,var_select,group_var){
 
 ## Group Split ----
 group_split_fn<-function(dat){
-        name_vals<-unique(dat$Values)
+        name_vals<-sort(unique(dat$Values))
         dat |> 
                 group_split(Values,.keep = FALSE) |> 
                 set_names(name_vals)
@@ -122,7 +123,7 @@ data_transform_fn<-function(dat,pivot_cols){
                 group_by(name) 
         dat|> 
                 group_split() |> 
-                set_names(unique(dat$name))
+                set_names(sort(unique(dat$name)))
 }
 
 
@@ -151,7 +152,7 @@ ind_calculate_fn<-function(lst){
 showtext::showtext_auto()
 plot_fn<-function(df,varname,xvar,plt_title,yscale=NULL,
                   plt_title.size=20,axix_title.size=14,
-                  axis_text.size=14){
+                  axis_text.size=14,start_date,end_date,date_break){
         df |> 
                 ggplot()+
                 aes(x={{xvar}},
@@ -172,8 +173,10 @@ plot_fn<-function(df,varname,xvar,plt_title,yscale=NULL,
                                                 size = axix_title.size,
                                                 colour = "#043572")
                 )+
-                scale_x_date(breaks = "6 months",
-                             date_labels = "%b-%y")+
+                scale_x_date(breaks=seq(as.Date(start_date),
+                                        as.Date(end_date),
+                                        by=date_break),
+                        date_labels = "%b-%y")+
                 labs(title = plt_title,
                      x=NULL)
 }
