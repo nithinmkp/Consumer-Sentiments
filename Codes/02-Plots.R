@@ -71,7 +71,7 @@ tibble(df=dat_list,varname=names(dat_list),
   mutate(plot=pmap(.,plot_fn,xvar=month_slot,
                    start_date="2016-01-01",
                    end_date="2021-12-01",
-                   date_break="6 months"))  |> 
+                   date_break="5 months"))  |> 
   mutate(filename = paste0(here("ggplots",levels(dat_pivot$Series)),".jpg"))  |>  
   select(plot,filename) %>% 
   pwalk(ggsave,width = 18,
@@ -81,7 +81,10 @@ tibble(df=dat_list,varname=names(dat_list),
 
 tibble(df=dat_list,varname=names(dat_list),
        plt_title=plot_labels)%>%
-        pmap(plot_fn,xvar=month_slot)|> 
+        pmap(plot_fn,xvar=month_slot,
+             start_date="2016-01-01",
+             end_date="2021-12-01",
+             date_break="5 months")|> 
         patchwork::wrap_plots(ncol = 3) |> 
         ggsave(filename = paste0(here("ggplots","fig2-repli"),".jpg"),
                width = 32,
