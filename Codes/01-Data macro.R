@@ -18,7 +18,7 @@ dir_create(clean_data)
 
 ### Policy Uncertainty ----
 
-dat<-read_excel("Data/Raw Data/Nithin (1).XLSX",sheet = "Sheet3") |> 
+dat<-read_excel(here(raw_data,"Nithin (1).XLSX"),sheet = "Sheet3") |> 
         mutate(date=make_date(year=Year,
                               month=Month,
                               day=1)) |> 
@@ -29,7 +29,7 @@ dat<-read_excel("Data/Raw Data/Nithin (1).XLSX",sheet = "Sheet3") |>
 
 ### IIP Index ----
 #### Data
-dat2<-read_excel("Data/Raw Data/Nithin (1).XLSX",sheet = "Sheet6",
+dat2<-read_excel(here(raw_data,"Nithin (1).XLSX"),sheet = "Sheet6",
                  range = "A3:M10") |> 
         rename_with(.cols = -1,~str_to_title(gsub("[()]","",.x))) |> 
         select(year=`Year / Month`,month.abb) |> 
@@ -47,7 +47,7 @@ dat2_change<-dat2 |>
         mutate("per_change"=round(across(2,~(.x-lag(.x))/lag(.x)*100),3))
 
 ### T-Bill ----
-dat3<-read_excel("Data/Raw Data/Nithin (1).XLSX",sheet = "Sheet7",
+dat3<-read_excel(here(raw_data,"Nithin (1).XLSX"),sheet = "Sheet7",
                  range = "A2:N23") |> 
         select(-...2,
                "Maturity/Year"="Terms To Maturity (In days)") |> 
@@ -68,7 +68,7 @@ dat3<-read_excel("Data/Raw Data/Nithin (1).XLSX",sheet = "Sheet7",
 
 ### NSE Monthly ----
 #### Data
-dat4<-read_excel("Data/Raw Data/Nithin (1).XLSX",sheet = "Nifty-month",
+dat4<-read_excel(here(raw_data,"Nithin (1).XLSX"),sheet = "Nifty-month",
                  range = "B4:N37") |> 
         select(year=`Year/ Month`,everything()) |> 
         mutate(across(-1,as.numeric)) |> 
@@ -86,7 +86,7 @@ dat4_change<-dat4 |>
 
 ### BSE-50 Monthly ----
 #### Data
-dat5<-read_excel("Data/Raw Data/Nithin (1).XLSX",sheet = "bse50-month",
+dat5<-read_excel(here(raw_data,"Nithin (1).XLSX"),sheet = "bse50-month",
                  range = "B4:O37") |> 
         select(year=`Year/ Month`,everything()) |> 
         mutate(across(-1,as.numeric)) |> 
@@ -104,7 +104,7 @@ dat5_change<-dat5 |>
         mutate("per_change"=round(across(2,~(.x-lag(.x))/lag(.x)*100),3))
 
 ### Bond rate ----
-dat6<-read_excel("Data/Raw Data/Nithin (1).XLSX",sheet = "Sheet11",
+dat6<-read_excel(here(raw_data,"Nithin (1).XLSX"),sheet = "Sheet11",
                  range = "B5:Q253") |> 
         select(year=`Term to Maturity(Years)`,
                everything(),
@@ -128,12 +128,12 @@ dat6<-read_excel("Data/Raw Data/Nithin (1).XLSX",sheet = "Sheet11",
 
 #### Daily Data 
 ##### NSE
-dat7<-read_csv("Data/Raw Data/^NSEI.csv",
+dat7<-read_csv(here(raw_data,"^NSEI.csv"),
                col_select = c("Date","Close"))
 
 
 ##### BSE
-dat8<-read_csv("Data/Raw Data/CSVForDate.csv",
+dat8<-read_csv(here(raw_data,"CSVForDate.csv"),
                col_select = c("Date","Close"))
 
 
@@ -167,7 +167,7 @@ dat8_sd<-dat8 |>
 ### CPI Data ----
 
 #### Data
-dat9<-read_excel("Data/Raw Data/HBS_Table_No._161___Consumer_Price_Index_-_Monthly.xlsx",
+dat9<-read_excel(here(raw_data,"HBS_Table_No._161___Consumer_Price_Index_-_Monthly.xlsx"),
                  range = "B21:N32") |>
         mutate(year=str_extract(`Year/Month`,"^[0-9]{4}")) |> 
         pivot_longer(-year,
