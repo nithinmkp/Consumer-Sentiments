@@ -31,11 +31,7 @@ dat<-read_excel("Data/Raw Data/Nithin (1).XLSX",sheet = "Sheet3") |>
 #### Data
 dat2<-read_excel("Data/Raw Data/Nithin (1).XLSX",sheet = "Sheet6",
                  range = "A3:M10") |> 
-        pivot_longer(cols = -"Year / Month",
-                     names_to = "month") |> 
-        mutate(month=str_to_title(gsub("[()]","",month))) |> 
-        pivot_wider(names_from = month,
-                    values_from = value) |> 
+        rename_with(.cols = -1,~str_to_title(gsub("[()]","",.x))) |> 
         select(year=`Year / Month`,month.abb) |> 
         pivot_longer(cols = -"year",
                      names_to = "month") |> 
