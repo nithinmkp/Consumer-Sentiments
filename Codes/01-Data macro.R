@@ -44,7 +44,8 @@ dat2<-read_excel(here(raw_data,"Nithin (1).XLSX"),sheet = "Sheet6",
 
 #### Percentage change Data
 dat2_change<-dat2 |> 
-        mutate("per_change"=round(across(2,~(.x-lag(.x))/lag(.x)*100),3))
+        mutate(round(across(2,~(.x-lag(.x))/lag(.x)*100,
+                            .names = "{.col}_%change"),3))
 
 ### T-Bill ----
 dat3<-read_excel(here(raw_data,"Nithin (1).XLSX"),sheet = "Sheet7",
@@ -82,7 +83,8 @@ dat4<-read_excel(here(raw_data,"Nithin (1).XLSX"),sheet = "Nifty-month",
         drop_na()
 #### Percentage Change Data
 dat4_change<-dat4 |> 
-        mutate("per_change"=round(across(2,~(.x-lag(.x))/lag(.x)*100),3))
+        mutate(round(across(2,~(.x-lag(.x))/lag(.x)*100,
+                             .names = "{.col}_%change"),3))
 
 ### BSE-50 Monthly ----
 #### Data
@@ -96,12 +98,13 @@ dat5<-read_excel(here(raw_data,"Nithin (1).XLSX"),sheet = "bse50-month",
         mutate(months=match(months,month.abb),
                year=str_extract(year,"^[0-9]{4}"),
                date=make_date(year,months,day=1)) |> 
-        select(date,`BSE-50`) |> 
+        select(date,"BSE-50") |> 
         drop_na()
 
 #### Percentage Change Data
 dat5_change<-dat5 |> 
-        mutate("per_change"=round(across(2,~(.x-lag(.x))/lag(.x)*100),3))
+        mutate(round(across(2,~(.x-lag(.x))/lag(.x)*100,
+                            .names = "{.col}_%change"),3))
 
 ### Bond rate ----
 dat6<-read_excel(here(raw_data,"Nithin (1).XLSX"),sheet = "Sheet11",
@@ -186,7 +189,8 @@ dat9<-read_excel(here(raw_data,"HBS_Table_No._161___Consumer_Price_Index_-_Month
 
 #### Percentage Change Data
 dat9_change<-dat9 |> 
-        mutate("per_change"=round(across(2,~(.x-lag(.x))/lag(.x)*100),3))
+        mutate(round(across(2,~(.x-lag(.x))/lag(.x)*100,
+                                       .names = "{.col}_%change"),3))
 
 # Final Macroeconomic Data ----
 datlist<-list(cpiausl=dat9_change,
@@ -200,3 +204,5 @@ datlist<-list(cpiausl=dat9_change,
               tb3ms=dat3)
 datlist[c(1,3,5,6)]<-map(datlist[c(1,3,5,6)], ~.x |> 
                                  select(-2))
+
+save(datlist,file = here(clean_master_data,"macro_data.RData"))
