@@ -5,7 +5,7 @@
 source(here::here("Codes","functions_3.R"))
 
 ## Packages ----
-packages<-c("tidyverse","fs","janitor","here","foreign","haven")
+packages<-c("tidyverse","fs","janitor","here","foreign","haven","data.table","dtplyr")
 package_fn(packages)
 
 ## Folders and Files ----
@@ -36,24 +36,35 @@ dat_macro<-dat_macro |>
 ## People Data
 base::load(here(clean_master_data,"people_data.RData"))
 
-## Decomposition Data
-base::load(file = here(clean_data,"decomposed_data.RData"))
+# ## Decomposition Data
+# base::load(file = here(clean_data,"decomposed_data.RData"))
+# 
+# 
+# decomp_dat_lst<-map(c(12,3,6,9),prime_Var_fn,dat=decomp_dat) |> 
+#         map(~.x |> 
+#                     drop_na()) |> 
+#         set_names(paste0("lag_",c(12,3,6,9)))
 
+## Indirect Utility ----
+# base::load(file = here(clean_data,"indirect_util_states.RData"))
+# indir_df<-state_indir_lst |> 
+#         flatten() |> 
+#         reduce(bind_rows)
+# save(indir_df,file=here(clean_data,"indir_utility_comb.RData"))
+# base::load(file=here(clean_data,"indir_utility_comb.RData"))
 
-decomp_dat_lst<-map(c(12,3,6,9),prime_Var_fn,dat=decomp_dat) |> 
-        map(~.x |> 
-                    drop_na()) |> 
-        set_names(paste0("lag_",c(12,3,6,9)))
 
 ## Combined Data
-data_comb<-decomp_dat |> 
-        drop_na() |> 
-        left_join(dat_people,by=c("date","hh_id","state","region_type")) |> 
-        dplyr::filter(date>=as.Date("2016-01-01") & date<=as.Date("2020-12-01")) |> 
-        left_join(dat_CS,by=c("date","hh_id","state","region_type")) |> 
-        left_join(dat_macro,by=c("date")) |> 
-        group_by(hh_id) |> 
-        drop_na()
+indir_df<-indir_df |> 
+        select(hh_id,date,state,region_type,Yhmt,Khmt,Phmt,Vhmt) |> 
+        drop_na() 
+
+indir_df<-calculate_lagged_values(indir_df,c("Yhmt", "Khmt", "Phmt", "Vhmt"),
+                        c(12, 3, 6, 9))
+indir_df<-indir_df[order(hh_id)]
+
+jk<-growth_function(indir_df,c(12, 3, 6, 9),"Phmt","inf")
+
 
 data_comb_lst<-map(decomp_dat_lst,left_join,dat_people,
                by=c("date","hh_id","state","region_type")) %>% 
