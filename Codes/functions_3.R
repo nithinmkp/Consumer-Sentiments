@@ -24,6 +24,9 @@ rename_fn <- function(df, col_ind, new_names) {
         return(df)
 }
 
+## Not-in Function ----
+`%not_in%`<-Negate("%in%")
+
 ## Read data function ----
 read_data_fn<-function(filename,num_cols=NULL,char_cols){
         read_csv(file = filename,
