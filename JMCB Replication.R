@@ -75,6 +75,6 @@ data_comb<-data_comb |>
 
 data_comb<-data_comb |> 
         filter(nature_of_occupation %in% unique(data_comb$nature_of_occupation)[-c(4:5,7:11,14,19,21)])
-
+rm(dat_child,dat_CS,dat_comb1,dat_comb2,married_dat,dat_list,dat_people,dat_kid)
 #save(data_comb,file = here(clean_data,"jmcb_data.RData"))
 #base::load(file = here(clean_data,"jmcb_data.RData"))
