@@ -5,8 +5,8 @@
 source(here::here("Codes","functions_3.R"))
 
 ## Packages ----
-packages<-c("tidyverse","fs","janitor","here","plm","pglm","marginaleffects",
-            "modelsummary","emmeans","mfx","margins","data.table","fixest")
+packages<-c("tidyverse","fs","janitor","here","plm","pglm","marginaleffects","oglmx",
+            "modelsummary","emmeans","mfx","margins","data.table","fixest","fastDummies")
 package_fn(packages)
 
 ## Folders and Files ----
@@ -76,5 +76,39 @@ data_comb<-data_comb |>
 data_comb<-data_comb |> 
         filter(nature_of_occupation %in% unique(data_comb$nature_of_occupation)[-c(4:5,7:11,14,19,21)])
 rm(dat_child,dat_CS,dat_comb1,dat_comb2,married_dat,dat_list,dat_people,dat_kid)
-#save(data_comb,file = here(clean_data,"jmcb_data.RData"))
-#base::load(file = here(clean_data,"jmcb_data.RData"))
+
+## Monthly Dummies
+data_comb<-data_comb %>%
+        mutate(date_fact=as.factor(format(date,"%b-%Y")),
+               .before = state) |>
+        dummy_cols("date_fact") |> 
+        dplyr::select(-date_fact) %>%
+        mutate(stata_date=as.integer(format(as.yearmon(.$date),"%Y%m")),
+                                          .before = state) %>% 
+        rename_with(~gsub("-", "_", .), starts_with("date_fact")) |> 
+        mutate(n_kid=case_when(
+                n_kid==1~"1",
+                n_kid==2~"2",
+                n_kid>=3~"3+",
+                .default = n_kid
+        ))
+        
+# save(data_comb,file = here(clean_data,"jmcb_data.RData")) # R Data
+# base::load(file = here(clean_data,"jmcb_data.RData"))
+# foreign::write.dta(data_comb,file = here(clean_data,"JMCB_stata.dta"))
+
+
+# Estimations ----
+
+## Preliminaries ----
+time_dums<-grep("date_fact_",names(data_comb),value = T)
+demo_vars<-names(data_comb)[c(5,18:20,25,26,33)]
+
+## Models ----
+## First Equation Ordered Probit
+mod1<-paste0("conditions_in_country_over_next_12_months~",
+            paste0(time_dums,collapse = "+"),"+",paste0(demo_vars,collapse = "+"))
+
+
+mod1_ord_probit<-oprobit.reg(mod1,
+                      data=data_comb)
