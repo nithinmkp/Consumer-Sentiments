@@ -82,18 +82,18 @@ help_expen_fn<-function(dat,vars_df,selected_vars,subgroup_name,group_name,...){
       
         
         dat<-dat %>%
-                select(everything(),intersect(selected_vars,colnames(.))) 
+                dplyr::select(everything(),intersect(selected_vars,colnames(.))) 
         if("MONTHLY_EXPENSE_ON_MEAT_EGGS_AND_FISH" %in% colnames(dat)) {
                 dat <- dat %>% 
-                        select(-MONTHLY_EXPENSE_ON_MEAT_EGGS_AND_FISH)
+                        dplyr::select(-MONTHLY_EXPENSE_ON_MEAT_EGGS_AND_FISH)
                 
                 dat %>% 
-                        mutate("tot_{subgroup_name}":=rowSums(select(., 
+                        mutate("tot_{subgroup_name}":=rowSums(dplyr::select(., 
                                                                      intersect(selected_vars,colnames(.))), 
                                                               na.rm = TRUE))
         } else{
                 dat %>% 
-                        mutate("tot_{subgroup_name}":=rowSums(select(., 
+                        mutate("tot_{subgroup_name}":=rowSums(dplyr::select(., 
                                                                      intersect(selected_vars,colnames(.))), 
                                                               na.rm = TRUE))  
         }
@@ -114,7 +114,7 @@ total_exp_fn<-function(dat,vars_df,group_name,...){
                 map2(selected_vars_list,names_subgrops,help_expen_fn,dat=dat,
                      vars_df=vars_df,group_name=group_name) |> 
                         reduce(left_join) %>% 
-                        mutate("TOT_{group_name}":=rowSums(select(., starts_with("tot_",
+                        mutate("TOT_{group_name}":=rowSums(dplyr::select(., starts_with("tot_",
                                                                                  ignore.case=F)), na.rm = TRUE))
         }else{
                 
@@ -123,7 +123,7 @@ total_exp_fn<-function(dat,vars_df,group_name,...){
                         pull(`CMIE Variables`)   
                 dat %>%
                         select(everything(),intersect(selected_vars,colnames(.)))  %>% 
-                        mutate("TOT_{group_name}":=rowSums(select(., 
+                        mutate("TOT_{group_name}":=rowSums(dplyr::select(., 
                                                                   intersect(selected_vars,colnames(.))), 
                                                            na.rm = TRUE)) 
         }
@@ -288,7 +288,7 @@ cpi_re_index_fn<-function(df_cpi,df_share,df_match,group_name,dir_vars,...){
                 filter(name %in% dir_vars) |> 
                 pivot_wider(names_from = name,
                             values_from = value) |> 
-                select(-c(1:2))
+                select(-c(1))
         
         
         df1<-mat_fn(df_share) %*% as.matrix(df_cpi_re) |>
@@ -376,7 +376,7 @@ alpha_fn_state<-function(dat_cpi,dat_share){
                 select(date,pi=value,name) -> value_dict
         dat_share <-dat_share |> 
                 rename(date=month) |> 
-                pivot_longer(-c(1:6),
+                pivot_longer(-c(1:5),
                              values_to = "share") |> 
                 distinct_all() |> 
                 left_join(value_dict,by=c("name","date")) |> 
