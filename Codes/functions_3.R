@@ -112,6 +112,10 @@ growth_function<-function(lagged_data, period_values, col, prefix) {
 }
 
 
-
+read_fn<-function(filename,na_char,colum_select,n_lines=Inf){
+        read_csv(filename,na=na_char,n_max = n_lines) %>% 
+                filter(RESPONSE_STATUS=="Accepted") |> 
+                select(colum_select)
+}
 
 
