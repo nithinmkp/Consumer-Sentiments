@@ -102,3 +102,20 @@ alpha_food<-alpha_food |>
         select(c(1:5,38:41)) |> 
         mutate(V_tilda_hmt=Vhmt/Khmt)
 # save(alpha_food,file=here(clean_data,"food_alpha.RData"))
+
+## Real income
+base::load(file =here(clean_data,"food_alpha.RData"))
+base::load(file=here(clean_data,"income_data.RData"))
+dat_list<-dat_list |> 
+        clean_names() |> 
+        mutate(date=as.Date(paste0("01-",month),"%d-%b %Y")) |> 
+        select(-district,-month)
+
+data<-left_join(alpha_food,dat_list,
+                by=c("hh_id","date","state","region_type"))
+data<-data |> 
+        rename(Ehmt=Yhmt) |> 
+        rename(Yhmt=total_income) |> 
+        mutate(Chmt=V_tilda_hmt/Khmt) |> 
+        mutate(Yhmt=Yhmt/Phmt)
+save(data,file=here(clean_data,"new_data.RData"))
